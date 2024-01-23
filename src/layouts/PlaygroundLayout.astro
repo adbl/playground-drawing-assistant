@@ -1,0 +1,32 @@
+---
+export interface Props {
+  frontmatter?: PlaygroundFrontmatter;
+}
+
+export interface PlaygroundFrontmatter {
+  date?: string;
+  title?: string;
+  description?: string;
+  github?: string;
+}
+
+const { frontmatter } = Astro.props;
+const { date, title, description, github } = frontmatter ?? {};
+---
+
+<html>
+  <head> </head>
+  <body class="mx-auto w-full max-w-3xl px-4">
+    <header>
+      {
+        github && (
+          <a href={`https://github.com/${github}`}>github.com/{github}</a>
+        )
+      }
+      {date && <p>{date}</p>}
+      {title && <h1>{title}</h1>}
+      {description && <p>{description}</p>}
+    </header>
+    <slot />
+  </body>
+</html>
