@@ -1,0 +1,104 @@
+---
+layout: "~/layouts/PlaygroundLayout.astro"
+date: 2024-01-20
+title: "Drawing assistant"
+description: "Here is an empty canvas and a prompt. What do you want to be drawn on the canvas?"
+github: adbl/playground-drawing-assistant
+---
+
+_Hint_: use incremental steps to bring your ideas to life.
+
+<div class="aspect-square w-full border-2 border-black dark:border-white">
+  <canvas class="absolute" id="canvas"></canvas>
+</div>
+
+<form id="form">
+  <div class="mb-4 mt-4 flex w-full">
+    <input
+      type="text"
+      id="text-input"
+      class="mr-4 flex-1 p-2 pl-3 pr-3 text-xl"
+    />
+    <input type="submit" value="OK" class="pl-3 pr-3" />
+  </div>
+</form>
+
+<textarea
+  disabled
+  placeholder="log..."
+  id="log-area"
+  rows="10"
+  class="bg-stone w-full rounded-md border border-stone-500 text-sm dark:bg-stone-800"
+/>
+
+1. Enter an [OpenAI API key](https://platform.openai.com/api-keys). It will only
+   be used by this page to call the OpenAI API.
+
+2. Enter instructions for the drawing assistant. Results are generally better by
+   adding instructions in several steps. Example:
+
+   - _Fill a small section towards the bottom with a dark green color_
+
+     _Assistant working..._
+
+   - _Add a red house with a black roof standing on the ground_
+
+     _..._
+
+   While the assistant is working the canvas operations are printed in the log area.
+
+3. Have fun!
+
+---
+
+import Source from "./_app/Source.astro";
+import app from "./_app/app.astro";
+
+# Tech notes
+
+[Assistant](https://platform.openai.com/docs/assistants/overview) creation,
+[Thread](https://platform.openai.com/docs/api-reference/threads) state
+management and calling the tool implementation. Versioning to enable reusing
+existing assistant without storing state.
+
+<Source path="./canvas-assistant.ts" lang="ts" />
+
+Defining assistant [function
+tools](https://platform.openai.com/docs/assistants/tools/function-calling) for a
+subset of the [Web Canvas
+API](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D).
+Such as:
+
+<Source path="./canvas-tools.ts" lang="ts" start={30} length={23} />
+
+<Source path="./canvas-tools.ts" lang="ts" start={367} length={16} />
+
+ChatGPT generated all the tool definitions 😁
+
+````console
+Describe the following CanvasRenderingContext2D instance methods: fillStyle, (...)
+They should be described in json the following way:
+
+```
+{
+  "name": "roundRect",
+  "description": "The CanvasRenderingContext2D.roundRect() method of the Canvas 2D API adds a rounded rectangle to the current path.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+       "x": {"type": "number", "description": "The x-axis coordinate of the rectangle's starting point, in pixels."},
+        "y": {"type": "number", "description": "The y-axis coordinate of the rectangle's starting point, in pixels."},
+        "width": {"type": "number", "description": "The rectangle's width. Positive values are to the right, and negative to the left."
+       "height": {"type": "number", "description: "The rectangle's height. Positive values are down, and negative are up."}
+    },
+    "required": ["x", "y", "width", "height"]
+  }
+}
+```
+````
+
+Mapping of tool calls to the actual canvas context methods/properties.
+Parameters needed some patching, in particular because of `Math.PI` arithmetic
+occurring 😬
+
+<Source path="./canvas-tools.ts" lang="ts" start={452} length={22} />

@@ -1,0 +1,22 @@
+---
+import { Code } from "astro:components";
+
+export interface Props {
+  path: string;
+  lang: string;
+  start?: number;
+  length?: number;
+}
+
+const sources = import.meta.glob(["./*.{ts,tsx}"], {
+  as: "raw",
+  eager: true,
+});
+
+const { path, lang, start, length } = Astro.props;
+
+const end = length ? (start ?? 0) + length : undefined;
+const code = sources[path].split("\n").slice(start, end).join("\n");
+---
+
+<Code code={code} lang={lang as any} />

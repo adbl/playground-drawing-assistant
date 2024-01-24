@@ -1,4 +1,4 @@
-Playground page: [src/pages/playground/template/index.mdx](src/pages/playground/template/index.mdx)
+Playground page: [src/pages/playground/drawing-assistages/index.mdx](src/pages/playground/drawing-assistant/index.mdx)
 
 ## Commands
 
