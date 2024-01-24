@@ -99,6 +99,7 @@ const app = () => {
     try {
       const assistant = await getAssistant(openai);
       const thread = await createThread(openai);
+      logArea.value += "🤖 waiting for instructions...\n";
       resetInput();
 
       form.addEventListener("submit", async (e: SubmitEvent) => {
@@ -120,6 +121,7 @@ const app = () => {
     initAssistant(storedApiKey);
   } else {
     textInput.placeholder = "Enter OpenAI API key";
+    logArea.value = "🤖 waiting for API key...\n";
 
     const onInitSubmit = async (e: SubmitEvent) => {
       e.preventDefault();
